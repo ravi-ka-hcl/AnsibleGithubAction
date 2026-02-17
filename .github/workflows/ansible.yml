@@ -1,0 +1,38 @@
+name: Run Ansible
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ansible:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Ansible
+        run: |
+          pip install --upgrade pip
+          pip install ansible
+
+      - name: Configure SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i inventories/dev/hosts.ini playbooks/site.yml \
+            --private-key ~/.ssh/id_rsa \
+            --ssh-common-args="-o StrictHostKeyChecking=no" \
+            -u ${{ secrets.ANSIBLE_SSH_USER }}
