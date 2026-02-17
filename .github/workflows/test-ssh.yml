@@ -19,4 +19,3 @@ jobs:
           ssh -o StrictHostKeyChecking=no \
               ${{ secrets.ANSIBLE_SSH_USER }}@${{ secrets.SERVER_IP }} \
               "echo 'SSH OK:' && hostname && whoami"
-``
