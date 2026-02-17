@@ -1,0 +1,22 @@
+name: Test SSH Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Test SSH connection
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              ${{ secrets.ANSIBLE_SSH_USER }}@${{ secrets.SERVER_IP }} \
+              "echo 'SSH OK:' && hostname && whoami"
+``
